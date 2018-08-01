@@ -1,4 +1,4 @@
-package net.eduard.api.lib.utils;
+package net.eduard.api.lib;
 
 import java.io.File;
 import java.io.FileInputStream;

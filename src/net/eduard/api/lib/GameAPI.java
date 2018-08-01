@@ -1,4 +1,4 @@
-package net.eduard.api.lib.utils;
+package net.eduard.api.lib;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,13 +21,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
 
-import net.eduard.api.lib.Extra;
-
 
 
 
 /**
- * API de controle de Entidades, Localiza§§es e muito mais
+ * API de controle de Entidades, Localizacoes e muito mais
  * @author Eduard
  * @version 1.0
  * @since Lib v1.0
