@@ -29,8 +29,8 @@ public final class VaultAPI {
 		return VaultAPI.getChat()
 				.getGroupPrefix("null",
 						VaultAPI.getPermission().getPrimaryGroup("null", Bukkit.getOfflinePlayer(player)))
-				.replace('&', '�');
-	}
+				.replace('&', '§');
+	} 
 
 	/**
 	 * Controle de permiss�es
