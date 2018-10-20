@@ -25,7 +25,7 @@ public class MenuGui extends Menu {
 	}
 	public MenuGui(String name) {
 		super(name);
-	}
+	} 
 
 	public void addSlot(int page, Slot slot) {
 		addSlot(page, slot.getIndex(), slot.getItem(), slot);

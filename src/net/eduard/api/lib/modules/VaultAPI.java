@@ -1,13 +1,14 @@
-package net.eduard.api.lib;
+package net.eduard.api.lib.modules;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
-/**AAAAAA
+/**
  * API para a utiliza��o do Vault com um formato mais simples de entender <br>
  * 
  * @author Eduard
@@ -29,8 +30,8 @@ public final class VaultAPI {
 		return VaultAPI.getChat()
 				.getGroupPrefix("null",
 						VaultAPI.getPermission().getPrimaryGroup("null", Bukkit.getOfflinePlayer(player)))
-				.replace('&', '§');
-	} 
+				.replace('&', ChatColor.COLOR_CHAR);
+	}
 
 	/**
 	 * Controle de permiss�es

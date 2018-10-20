@@ -15,7 +15,7 @@ public class ShopGui extends Menu {
 	private ItemStack[] products;
 	private double[] prices;
 
-	public ShopGui() {
+	public ShopGui() { 
 		// TODO Auto-generated constructor stub
 	}
 
@@ -42,9 +42,9 @@ public class ShopGui extends Menu {
 									} else {
 										player.getInventory().addItem(product);
 									}
-									player.sendMessage("§aVoce adquiriu um item da Loja!");
+									player.sendMessage("ï¿½aVoce adquiriu um item da Loja!");
 								} else {
-									player.sendMessage("§cVoce n§o tem dinheiro suficiente!");
+									player.sendMessage("ï¿½cVoce nï¿½o tem dinheiro suficiente!");
 								}
 
 							}
@@ -77,7 +77,7 @@ public class ShopGui extends Menu {
 		if (clone.getItemMeta().hasLore())
 			lore.addAll(clone.getItemMeta().getLore());
 		lore.add("");
-		lore.add("§aPre§o: §2" + price);
+		lore.add("ï¿½aPreï¿½o: ï¿½2" + price);
 		lore.add("");
 		Mine.setLore(clone, lore);
 		addSlot(clone, page, slot);
