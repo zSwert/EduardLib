@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import net.eduard.api.lib.core.Mine;
+import net.eduard.api.lib.Mine;
 import net.eduard.api.lib.manager.EventsManager;
 import net.eduard.api.lib.manager.FallManager;
 
@@ -24,7 +24,7 @@ public class LaunchPad extends EventsManager {
 	private Jump jump;
 	public LaunchPad() {
 	}
-	
+	 
 	public LaunchPad(int blockId, Jump jump) {
 		this.blockId = blockId;
 		this.jump = jump;

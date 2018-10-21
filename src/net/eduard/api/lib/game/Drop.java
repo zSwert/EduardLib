@@ -13,7 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
-import net.eduard.api.lib.core.Mine;
+import net.eduard.api.lib.Mine;
 import net.eduard.api.lib.manager.EventsManager;
 
 public class Drop extends EventsManager{

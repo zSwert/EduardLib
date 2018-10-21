@@ -61,7 +61,7 @@ public class Menu extends EventsManager {
 			if (button.getIcon().equals(icon)) {
 				return button;
 			}
-		} 
+		}
 
 		return null;
 	}
