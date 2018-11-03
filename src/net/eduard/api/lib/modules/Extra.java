@@ -29,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -65,7 +66,22 @@ import com.google.common.io.ByteStreams;
 public final class Extra {
 
 	private static Map<String, String> replacers = new LinkedHashMap<>();
+	public static String formatDate(long date) {
+		Calendar calendario = Calendar.getInstance();
+		calendario.setTimeInMillis(date);
 
+		SimpleDateFormat formatador = new SimpleDateFormat("dd/MM/yyyy");
+
+		return formatador.format(calendario.getTime());
+	}
+	public static String formatHours(long milisegundos) {
+		Calendar calendario = Calendar.getInstance();
+		calendario.setTimeInMillis(milisegundos);
+
+		SimpleDateFormat formatador = new SimpleDateFormat("HH:mm:ss");
+
+		return formatador.format(calendario.getTime());
+	}
 	/**
 	 * 
 	 * @param type Variavel (Classe)
@@ -83,6 +99,38 @@ public final class Extra {
 		}
 		return null;
 	}
+
+	public static double calculatePluginValue(Class<?> plugin, String pack) {
+
+		double valor = 0;
+
+		List<Class<?>> classes = Extra.getClasses(plugin, pack);
+
+		for (Class<?> claz : classes) {
+			valor += 0.05;
+			while (!claz.equals(Object.class)) {
+				valor += calculateClassValue(claz, 0.05, 0.05);
+				claz = claz.getSuperclass();
+			}
+		}
+
+//		System.out.println("Valor gerado: " + valor);
+		return valor;
+	}
+
+	public static double calculateClassValue(Class<?> claz, double methodPrice, double fieldPrice) {
+		double valor = 0;
+		for (Field field : claz.getDeclaredFields()) {
+			valor += methodPrice;
+			field.getName();
+		}
+		for (Method method : claz.getDeclaredMethods()) {
+			valor += methodPrice;
+			method.getName();
+		}
+		return valor;
+	}
+
 	/**
 	 * Descobre qual é a coluna baseada no numero
 	 * 
@@ -95,10 +143,27 @@ public final class Extra {
 		}
 		return (index % 9) + 1;
 	}
-	
-	public static int getLine(int index	) {
-		return (index/9)+1;
+
+	public static int getIndex(int column, int line) {
+		if (line <= 0) {
+			line = 1;
+		}
+
+		if (column > 9) {
+			column = 9;
+		}
+		if (column <= 0) {
+			column = 1;
+		}
+
+		int index = (line - 1) * 9;
+		return index + (column - 1);
 	}
+
+	public static int getLine(int index) {
+		return (index / 9) + 1;
+	}
+
 	/**
 	 * 
 	 * @param type Variavel {@link Type} (Classe/Tipo)
@@ -120,7 +185,7 @@ public final class Extra {
 	/**
 	 * 
 	 * @param claz Classe
-	 * @return Se a claz � um {@link Map} (Mapa)
+	 * @return Se a claz § um {@link Map} (Mapa)
 	 * 
 	 */
 	public static boolean isMap(Class<?> claz) {
@@ -130,7 +195,7 @@ public final class Extra {
 	/**
 	 * 
 	 * @param claz Classe
-	 * @return Se a claz � uma {@link List} (Lista)
+	 * @return Se a claz § uma {@link List} (Lista)
 	 * 
 	 */
 	public static boolean isList(Class<?> claz) {
@@ -163,7 +228,7 @@ public final class Extra {
 	}
 
 	/**
-	 * Salva um Objecto no Arquivo em forma de serializa��o Java
+	 * Salva um Objecto no Arquivo em forma de serializa§§o Java
 	 * 
 	 * @param object Objeto (Dado)
 	 * @param file   Arquivo
@@ -222,7 +287,7 @@ public final class Extra {
 	/**
 	 * Defaz o ZIP do Arquivo
 	 * 
-	 * @param zipIn    Input Stream (Cone��o de Algum Arquivo)
+	 * @param zipIn    Input Stream (Cone§§o de Algum Arquivo)
 	 * @param filePath Destino Arquivo
 	 */
 	public static void extractFile(ZipInputStream zipIn, String filePath) {
@@ -343,7 +408,7 @@ public final class Extra {
 	/**
 	 * Tenta carregar uma classe e a retorna
 	 * 
-	 * @param name Endere�o
+	 * @param name Endere§o
 	 * @return Classe carregada
 	 */
 	public static Class<?> loadClass(String name) {
@@ -465,7 +530,7 @@ public final class Extra {
 	/**
 	 * 
 	 * @param claz Classe
-	 * @return Se a claz � um {@link String} (Texto)
+	 * @return Se a claz § um {@link String} (Texto)
 	 * 
 	 */
 	public static boolean isString(Class<?> claz) {
@@ -475,7 +540,7 @@ public final class Extra {
 	/**
 	 * 
 	 * @param claz Classe
-	 * @return Se a claz � do tipo Primitivo ou Wrapper (Envolocro)
+	 * @return Se a claz § do tipo Primitivo ou Wrapper (Envolocro)
 	 * 
 	 */
 	public static boolean isWrapper(Class<?> claz) {
@@ -510,7 +575,7 @@ public final class Extra {
 	}
 
 	public static String toChatMessage(String text) {
-		return text.replace("&", "�");
+		return text.replace("&", "§");
 	}
 
 	public static List<String> toMessages(List<Object> list) {
@@ -565,7 +630,7 @@ public final class Extra {
 	}
 
 	/**
-	 * Formata o resultado da subtra��o de *numero antigo - numero atual)
+	 * Formata o resultado da subtra§§o de *numero antigo - numero atual)
 	 * 
 	 * @param timestamp Numero Antigo
 	 * @return Texto do numero formatado
@@ -776,7 +841,7 @@ public final class Extra {
 	}
 
 	public static String toConfigMessage(String text) {
-		return text.replace("�", "&");
+		return text.replace("§", "&");
 	}
 
 	public static String toDecimal(Object number) {
@@ -1122,7 +1187,7 @@ public final class Extra {
 	}
 
 	/**
-	 * Tipo de gera��o de Key
+	 * Tipo de gera§§o de Key
 	 * 
 	 * @author Eduard-PC
 	 *
@@ -1194,7 +1259,7 @@ public final class Extra {
 	}
 
 	/**
-	 * Pega o Ip do Cone��o do Servidor
+	 * Pega o Ip do Cone§§o do Servidor
 	 * 
 	 * @return Ip do Servidor
 	 */
@@ -1258,7 +1323,7 @@ public final class Extra {
 	 * Seta um valor para um determinado ? de um PreparedStatement
 	 * 
 	 * @param state State
-	 * @param param Posi��o
+	 * @param param Posi§§o
 	 * @param value Valor ser setado
 	 */
 	public static void setSQLValue(PreparedStatement state, int param, Object value) {
@@ -1394,13 +1459,12 @@ public final class Extra {
 
 		return null;
 	}
-	
+
 	/**
 	 * 
 	 * 
 	 */
-	
-	
+
 	public static List<Object> read(byte[] message, boolean oneLine) {
 		List<Object> lista = new ArrayList<>();
 		ByteArrayDataInput in = ByteStreams.newDataInput(message);
@@ -1455,6 +1519,4 @@ public final class Extra {
 		return stream.toByteArray();
 	}
 
-	
-	
 }

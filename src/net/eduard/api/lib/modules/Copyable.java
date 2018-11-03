@@ -1,5 +1,8 @@
 package net.eduard.api.lib.modules;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -20,11 +23,15 @@ import java.util.Map.Entry;
 @SuppressWarnings("unchecked")
 public interface Copyable {
 
-//	@Target({ java.lang.annotation.ElementType.FIELD })
-//	@Retention(RetentionPolicy.RUNTIME)
-//	public @interface NoCopyable {
-//
-//	}
+	@Target({ java.lang.annotation.ElementType.FIELD })
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface NotCopyable {
+
+	}
+
+	public static void debug(String msg) {
+		System.out.println("[Copyable] " + msg);
+	}
 
 	public default Object copy() {
 		return copy(this);
@@ -52,8 +59,9 @@ public interface Copyable {
 		return object;
 	}
 
-	
 	public default <E> E copy(E object) {
+		if (object == null)
+			return null;
 
 		Class<? extends Object> claz = object.getClass();
 		// System.out.println("classe a ser copiada " + object + " e array? " +
@@ -85,36 +93,32 @@ public interface Copyable {
 
 		} else {
 			try {
-
+				debug("COPYING " + object.getClass().getSimpleName());
 				E newInstance = (E) object.getClass().newInstance();
+
 				while (!claz.equals(Object.class)) {
 					for (Field field : claz.getDeclaredFields()) {
+
 						if (Modifier.isStatic(field.getModifiers()))
 							continue;
-						if (Modifier.isTransient(field.getModifiers())) {
-							continue;
-						}
-							
+
 						field.setAccessible(true);
 						try {
 							Object value = field.get(object);
-							if (value != null) {
-//								if (field.isAnnotationPresent(NoCopyable.class)) {
-//									field.set(newInstance, value);
-//								} else {
-									field.set(newInstance, copy(value));
-//								}
+							if (!field.isAnnotationPresent(NotCopyable.class)) {
+								field.set(newInstance, copy(value));
 							}
 
 						} catch (Exception e) {
-							e.printStackTrace();
+							debug("VARIABLE FAILED " + field.getName());
 						}
+
 					}
 					claz = claz.getSuperclass();
 				}
 				object = newInstance;
 			} catch (Exception e) {
-				System.out.println("[Copyable] falha ao copiar "+claz);
+				debug("FAIL " + claz.getSimpleName());
 //				e.printStackTrace();
 			}
 

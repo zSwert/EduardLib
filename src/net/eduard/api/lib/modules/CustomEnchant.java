@@ -20,6 +20,8 @@ public abstract class CustomEnchant extends EnchantmentWrapper {
 
 	private String name;
 	private boolean registred;
+	private int maxLevel = 1;
+	private int startLevel = 1;
 
 	@SuppressWarnings("deprecation")
 	public CustomEnchant unregister() {
@@ -41,12 +43,17 @@ public abstract class CustomEnchant extends EnchantmentWrapper {
 		return this;
 	}
 
+	@Override
+	public boolean canEnchantItem(ItemStack item) {
+		return true;
+	}
+
 	public ItemStack enchant(ItemStack item, int level) {
 
 		item.addUnsafeEnchantment(this, level);
 		String romano = convertToRomano(level);
 		ItemMeta meta = item.getItemMeta();
-		String enchamentname = "ง7" + getName() + " " + romano;
+		String enchamentname = "ยง7" + getName() + " " + romano;
 		if (meta.getLore() == null) {
 
 			meta.setLore(Arrays.asList(enchamentname));
@@ -112,6 +119,22 @@ public abstract class CustomEnchant extends EnchantmentWrapper {
 
 	public void setRegistred(boolean registred) {
 		this.registred = registred;
+	}
+
+	public int getMaxLevel() {
+		return maxLevel;
+	}
+
+	public void setMaxLevel(int maxLevel) {
+		this.maxLevel = maxLevel;
+	}
+
+	public int getStartLevel() {
+		return startLevel;
+	}
+
+	public void setStartLevel(int startLevel) {
+		this.startLevel = startLevel;
 	}
 
 }

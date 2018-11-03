@@ -21,10 +21,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -84,8 +82,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -103,6 +99,8 @@ import net.eduard.api.lib.manager.TimeManager;
 import net.eduard.api.lib.modules.EmptyWorldGenerator;
 import net.eduard.api.lib.modules.Extra;
 import net.eduard.api.lib.modules.FakePlayer;
+import net.eduard.api.lib.modules.LocationEffect;
+import net.eduard.api.lib.modules.Point;
 
 /**
  * API principal da Lib contendo muitos codigos bons e utilitarios
@@ -111,16 +109,7 @@ import net.eduard.api.lib.modules.FakePlayer;
  * @version 3.0
  */
 public final class Mine {
-	/**
-	 * Efeito a fazer na localização
-	 * 
-	 * @author Eduard
-	 *
-	 */
-	public static interface LocationEffect {
-
-		boolean effect(Location location);
-	}
+	
 
 	static {
 		Extra.newReplacer("#v", Mine.getVersion());
@@ -130,23 +119,6 @@ public final class Mine {
 		return Extra.getClassFrom(object);
 	}
 
-	public static String formatDate(long date) {
-		Calendar calendario = Calendar.getInstance();
-		calendario.setTimeInMillis(date);
-
-		SimpleDateFormat formatador = new SimpleDateFormat("dd/MM/yyyy");
-
-		return formatador.format(calendario.getTime());
-	}
-
-	public static String formatHours(long milisegundos) {
-		Calendar calendario = Calendar.getInstance();
-		calendario.setTimeInMillis(milisegundos);
-
-		SimpleDateFormat formatador = new SimpleDateFormat("HH:mm:ss");
-
-		return formatador.format(calendario.getTime());
-	}
 
 	public static String classMineEntityPlayer = "#mEntityPlayer";
 	public static String classCraftCraftPlayer = "#cCraftPlayer";
@@ -180,34 +152,7 @@ public final class Mine {
 		Extra.newReplacer("#v", Mine.getVersion());
 	}
 
-	/**
-	 * Ponto de direção usado para fazer um RADAR
-	 * 
-	 * @author Eduard
-	 *
-	 */
-	public static enum Point {
-		N('N'), NE('/'), E('O'), SE('\\'), S('S'), SW('/'), W('L'), NW('\\');
-
-		public final char asciiChar;
-
-		private Point(char asciiChar) {
-			this.asciiChar = asciiChar;
-		}
-
-		@Override
-		public String toString() {
-			return String.valueOf(this.asciiChar);
-		}
-
-		public String toString(boolean isActive, ChatColor colorActive, String colorDefault) {
-			return (isActive ? colorActive : colorDefault) + String.valueOf(this.asciiChar);
-		}
-
-		public String toString(boolean isActive, String colorActive, String colorDefault) {
-			return (isActive ? colorActive : colorDefault) + String.valueOf(this.asciiChar);
-		}
-	}
+	
 
 	public static interface Replacer {
 
@@ -225,7 +170,7 @@ public final class Mine {
 	public static Map<String, Schematic> MAPS = new HashMap<>();
 
 	public static Map<Player, Schematic> MAPS_CACHE = new HashMap<>();
-	public static ConfigAPI MAPS_CONFIG;
+	public static BukkitConfig MAPS_CONFIG;
 	/**
 	 * Som do rosnar do gato
 	 */
@@ -323,7 +268,7 @@ public final class Mine {
 	static {
 		try {
 			TIME = new TimeManager(getMainPlugin());
-			MAPS_CONFIG = new ConfigAPI("maps/", getMainPlugin());
+			MAPS_CONFIG = new BukkitConfig("maps/", getMainPlugin());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -373,6 +318,9 @@ public final class Mine {
 			inv.setItem(i, item);
 		}
 	}
+
+
+
 
 	public static void addPermission(Player p, String permission) {
 		p.addAttachment(getMainPlugin(), permission, true);
@@ -687,13 +635,7 @@ public final class Mine {
 		return text.length() > lenght ? text.substring(0, lenght) : text;
 	}
 
-	public static BukkitTask delay(Plugin plugin, long ticks, Runnable run) {
-		return Bukkit.getScheduler().runTaskLater(plugin, run, ticks);
-	}
 
-	public static BukkitTask delays(Plugin plugin, long ticks, Runnable run) {
-		return Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, run, ticks);
-	}
 
 	public static void deleteFolder(File file) {
 		if (file.exists()) {
@@ -1010,27 +952,6 @@ public final class Mine {
 		}
 
 		return lista;
-	}
-
-	public static String getCmd(String message) {
-		return Extra.getCommandName(message);
-	}
-
-	/**
-	 * Descobre qual é a coluna baseada no numero
-	 * 
-	 * @param index Numero
-	 * @return A coluna
-	 */
-	public static int getColumn(int index) {
-		if (index < 9) {
-			return index + 1;
-		}
-		return (index % 9) + 1;
-	}
-	
-	public static int getLine(int index	) {
-		return (index/9)+1;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1387,7 +1308,7 @@ public final class Mine {
 	public static int getItemsAmount(Inventory inventory) {
 		int amount = 0;
 		for (ItemStack item : inventory.getContents()) {
-			if (item != null&&item.getType()!=Material.AIR) {
+			if (item != null && item.getType() != Material.AIR) {
 				amount++;
 			}
 		}
@@ -1642,8 +1563,7 @@ public final class Mine {
 	}
 
 	public static int getPosition(int line, int column) {
-		int value = (line - 1) * 9;
-		return value + column - 1;
+		return Extra.getIndex(column, line);
 	}
 
 	public static String getProgressBar(double money, double price, String concluidoCor, String faltandoCor,
@@ -1757,6 +1677,21 @@ public final class Mine {
 
 	public static Replacer getReplacer(String key) {
 		return replacers.get(key);
+	}
+
+	public static ItemStack getReplacers(ItemStack itemOriginal, Player player) {
+		ItemStack itemCopia = itemOriginal.clone();
+		String displayName = getName(itemCopia);
+		List<String> linhas = getLore(itemCopia);
+
+		setName(itemCopia, getReplacers(displayName, player));
+		for (int index = 0; index < linhas.size(); index++) {
+			String linha = linhas.get(index);
+			linhas.set(index, getReplacers(linha, player));
+		}
+		setLore(itemCopia, linhas);
+		return itemCopia;
+
 	}
 
 	public static String getReplacers(String text, Player player) {
@@ -2098,7 +2033,7 @@ public final class Mine {
 	 * @return O resultado do teste
 	 */
 	public static boolean isColumn(int index, int colunm) {
-		return getColumn(index) == colunm;
+		return Extra.getColumn(index) == colunm;
 	}
 
 	public static boolean isDirectory(File file) {
@@ -2710,7 +2645,7 @@ public final class Mine {
 		if (pagina > 1) {
 			inv.setItem(voltarSlot, Mine.newItem(Material.ARROW, "§aVoltar"));
 		}
-		if (pagina < quantidadeDePaginas) {
+		if (pagina <= quantidadeDePaginas) {
 			inv.setItem(avancarSlot, Mine.newItem(Material.ARROW, "§aAvançar"));
 		}
 		player.openInventory(inv);
@@ -3421,21 +3356,6 @@ public final class Mine {
 		entity.teleport(entity.getWorld().getSpawnLocation().setDirection(entity.getLocation().getDirection()));
 	}
 
-	public static BukkitTask timer(Plugin plugin, long ticks, Runnable run) {
-		if (run instanceof BukkitRunnable) {
-			BukkitRunnable bukkitRunnable = (BukkitRunnable) run;
-			return bukkitRunnable.runTaskTimer(plugin, ticks, ticks);
-		}
-		return Bukkit.getScheduler().runTaskTimer(plugin, run, ticks, ticks);
-	}
-
-	public static BukkitTask timers(Plugin plugin, long ticks, Runnable run) {
-		if (run instanceof BukkitRunnable) {
-			BukkitRunnable bukkitRunnable = (BukkitRunnable) run;
-			return bukkitRunnable.runTaskTimerAsynchronously(plugin, ticks, ticks);
-		}
-		return Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, run, ticks, ticks);
-	}
 
 	public static Boolean toBoolean(Object obj) {
 		return Extra.toBoolean(obj);
